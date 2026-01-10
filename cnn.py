@@ -1,24 +1,28 @@
 from tensorflow import keras
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.layers import Activation, Conv2D, Dense, Dropout, Flatten, MaxPooling2D
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 import numpy as np
 import matplotlib.pyplot as plt
 
 (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-# 今回は全データのうち、学習には300、検証には100個のデータを使用
+# 全データのうち、学習には300、検証には100個のデータを使用
 X_train = X_train[:300]
-X_test = X_test[:100]
-y_train = to_categorical(y_train)[:300]
-y_test = to_categorical(y_test)[:100]
+X_test  = X_test[:100]
 
-#インスタンスの作成
+X_train = X_train.astype("float32") / 255.0
+X_test  = X_test.astype("float32")  / 255.0
+
+y_train = to_categorical(y_train[:300], 10)
+y_test  = to_categorical(y_test[:100], 10)
+
+# インスタンスの作成
 model = Sequential()
-#層の追加
-model.add(Conv2D(32, (3, 3), padding='same',
-                 input_shape=X_train.shape[1:]))
+
+# 層の追加
+model.add(Conv2D(32, (3, 3), padding='same', input_shape=X_train.shape[1:]))
 model.add(Activation('relu'))
 model.add(Conv2D(32, (3, 3)))
 model.add(Activation('relu'))
@@ -43,36 +47,29 @@ opt = keras.optimizers.RMSprop(learning_rate=0.0001)
 model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
-history = model.fit(X_train, y_train, batch_size=100, epochs=10, validation_data=(X_test, y_test)) 
+
+history = model.fit(
+    X_train, y_train,
+    batch_size=100,
+    epochs=10,
+    validation_data=(X_test, y_test)
+)
 
 scores = model.evaluate(X_test, y_test, verbose=1)
-# 損失関数による損失の出力
 print('Test loss:', scores[0])
-# 正答率の出力
 print('Test accuracy:', scores[1])
 
 pred = np.argmax(model.predict(X_test[0:10]), axis=1)
 print(pred)
-#モデル構造の表を出力
+
 model.summary()
 
-# 学習の経過を出力
 print("Train Accuracy per epoch:", history.history['accuracy'])
 print("Validation Accuracy per epoch:", history.history['val_accuracy'])
 print("Train Loss per epoch:", history.history['loss'])
 print("Validation Loss per epoch:", history.history['val_loss'])
 
-# 学習の経過を出力・プロット
 plt.figure(figsize=(12, 4))
-
-# loss
-plt.subplot(1, 2, 2)
-plt.plot(history.history['loss'], label='Train Loss')
-plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.legend()
-plt.title('Epoch vs Loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
 
 # accuracy
 plt.subplot(1, 2, 1)
@@ -82,6 +79,15 @@ plt.legend()
 plt.title('Epoch vs Accuracy')
 plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
+
+# loss
+plt.subplot(1, 2, 2)
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.legend()
+plt.title('Epoch vs Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
 
 plt.tight_layout()
 plt.show()
