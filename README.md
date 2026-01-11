@@ -171,5 +171,6 @@ $$
 上位層では物体や形状といったより抽象的・全体的特徴が抽出される。
 
 ## 参考資料
-https://qiita.com/setowatson/items/ffa9c60023965fe14e6c
+- https://qiita.com/setowatson/items/ffa9c60023965fe14e6c
+- https://qiita.com/momoyama/items/aecf831fbf887f067d42
 
