@@ -99,7 +99,7 @@ $$
 
 ---
 
-### 4.2 Max Pooling の数式
+### 4.2 Max Pooling
 
 プーリング領域 $\Omega$ に対し，Max Pooling は次式で定義される。
 
